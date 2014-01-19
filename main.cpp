@@ -94,6 +94,8 @@ int min1 = 1023, max1 = 0, min2 = 1023, max2 = 0;
 static unsigned long ulClockMS=0;
 
 unsigned long last_dongle_millis = 0, last_car_param_millis = 0;
+
+
 double map_value(double x, double in_min, double in_max, double out_min, double out_max, bool trunc = false);
 
 int main(void)
@@ -147,6 +149,8 @@ int main(void)
 #endif
 
 	uint32_t last_millis = millis();
+	uint32_t mosfet_millis = millis();
+	bool mosfet_state = false;
 
 #ifdef DEBUG
 	UARTprintf("Setting up GPIO ... ");
@@ -249,7 +253,7 @@ int main(void)
 						temp = (temp & INA226_ALERT_PIN) == INA226_ALERT_PIN ? 0 : 1;
 
 #ifdef DEBUG
-						UARTprintf("sent = %d\n", temp);
+						UARTprintf("sent = %d\n", mini_rally.buttons);
 #endif
 						radio.stopListening();
 						radio.write(&temp, sizeof(uint8_t));
@@ -265,6 +269,32 @@ int main(void)
 			esc_setPosition(ESC_ZERO);
 			servo_setPosition(SERVO_ZERO);
 		}
+
+		// Switch ON/OFF mosfet
+		if((mini_rally.buttons & (L1_BUTTON | R1_BUTTON | R2_BUTTON)) == (L1_BUTTON | R1_BUTTON | R2_BUTTON))
+		{
+			if(millis() - mosfet_millis > 2000)
+			{
+				if(!mosfet_state)
+				{
+					GPIOPinWrite(MOSFET_PORT, MOSFET_PIN, MOSFET_PIN);
+				}
+				else
+				{
+					GPIOPinWrite(MOSFET_PORT, MOSFET_PIN, ~MOSFET_PIN);
+				}
+				mosfet_state = !mosfet_state;
+				mosfet_millis = millis();
+			}
+		}
+		else
+		{
+			mosfet_millis = millis();
+		}
+
+
+//		if(millis() - last_car_param_millis > CAR_PARAM_MILLIS)
+//
 		//		if(millis() - last_car_param_millis > CAR_PARAM_MILLIS)
 		//		{
 		//			last_car_param_millis = millis();
