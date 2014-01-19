@@ -21,7 +21,7 @@
 #define R2_BUTTON			0x08
 #define ASK_BIT				0x10
 
-
+#define BUTTONS_MOSFET_STATE	(/*L1_BUTTON | R1_BUTTON |*/ R2_BUTTON)
 
 typedef struct ROSpberryRemote
 {

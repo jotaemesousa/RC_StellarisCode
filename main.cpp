@@ -271,7 +271,7 @@ int main(void)
 		}
 
 		// Switch ON/OFF mosfet
-		if((mini_rally.buttons & (L1_BUTTON | R1_BUTTON | R2_BUTTON)) == (L1_BUTTON | R1_BUTTON | R2_BUTTON))
+		if((mini_rally.buttons & BUTTONS_MOSFET_STATE) == BUTTONS_MOSFET_STATE)
 		{
 			if(millis() - mosfet_millis > 2000)
 			{
