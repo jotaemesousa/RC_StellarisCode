@@ -23,7 +23,6 @@ extern "C" {
 #include "servo.h"
 #include "INA226.h"
 #include "Encoder.h"
-#include "libraries/SoftPWM/soft_pwm.h"
 
 #define SYSTICKS_PER_SECOND     1000
 
@@ -131,9 +130,7 @@ int main(void)
 #ifdef DEBUG
 	UARTprintf("Setting up PWM ... ");
 #endif
-	initSoftPWM(500,40);
 	servo_init();
-	enablePWM();
 #ifdef DEBUG
 	UARTprintf("Done!\n");
 #endif
