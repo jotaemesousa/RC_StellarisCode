@@ -14,7 +14,7 @@
 #define MAX_BUFFER_SIZE			50
 #define FIRST_CHAR				':'
 #define LAST_CHAR				';'
-#define THRESHOLD_BETWEEN_MSG	300L	//ms
+#define THRESHOLD_BETWEEN_MSG	250	//ms
 #define N_CHARS					10
 #define N_VALUES				5
 

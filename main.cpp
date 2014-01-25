@@ -37,8 +37,8 @@ extern "C" {
 #define DEBUG
 //#define DEBUG_CMD
 // use sensors
-//#define USE_I2C
-//#define USE_INA226
+#define USE_I2C
+#define USE_INA226
 #define INA226_ALERT_PIN		GPIO_PIN_0
 #define INA226_ALERT_PORT		GPIO_PORTE_BASE
 
@@ -90,6 +90,8 @@ int min1 = 1023, max1 = 0, min2 = 1023, max2 = 0;
 #include "rf24/RF24.h"
 #include "libraries/AMC6821/AMC6821.h"
 #include "remote_defines.h"
+#include "flash_store_values.h"
+
 static unsigned long ulClockMS=0;
 
 unsigned long last_dongle_millis = 0, last_car_param_millis = 0;
@@ -147,6 +149,7 @@ int main(void)
 
 	uint32_t last_millis = millis();
 	uint32_t mosfet_millis = millis();
+	uint32_t set_servo_millis = millis();
 	bool mosfet_state = false;
 
 #ifdef DEBUG
@@ -235,8 +238,36 @@ int main(void)
 
 				if(done)
 				{
-					esc_setPosition(map_value(mini_rally.linear, -127, 127, ESC_MIN, ESC_MAX));
-					servo_setPosition(map_value(mini_rally.steer, -127, 127, SERVO_MIN, SERVO_MAX));
+					if(getServoSettingStatus())
+					{
+						servoSetOffset(mini_rally.steer);
+
+						if((getButtons(mini_rally) == R1_BUTTON) && (mini_rally.linear == 0))
+						{
+							setServoSettingStatus(false);
+						}
+					}
+					else
+					{
+						if((mini_rally.buttons & L1_BUTTON) == L1_BUTTON)
+						{
+							esc_setPosition(map_value(mini_rally.linear, -127, 127, ESC_MIN_N20, ESC_MAX_N20));
+						}
+						else
+						{
+							esc_setPosition(map_value(mini_rally.linear, -127, 127, ESC_MIN, ESC_MAX));
+						}
+
+						if((mini_rally.buttons & R1_BUTTON) == R1_BUTTON)
+						{
+							servo_setPosition(map_value(mini_rally.steer, -127, 127, SERVO_MIN, SERVO_MAX));
+						}
+						else
+						{
+							servo_setPosition(map_value(mini_rally.steer, -127, 127, SERVO_MIN_PARTIAL, SERVO_MAX_PARTIAL));
+						}
+					}
+
 					last_millis = millis();
 
 					if((mini_rally.buttons & ASK_BIT) == ASK_BIT)
@@ -268,7 +299,7 @@ int main(void)
 		}
 
 		// Switch ON/OFF mosfet
-		if((mini_rally.buttons & BUTTONS_MOSFET_STATE) == BUTTONS_MOSFET_STATE)
+		if(getButtons(mini_rally) == BUTTONS_MOSFET_STATE)
 		{
 			if(millis() - mosfet_millis > 2000)
 			{
@@ -289,9 +320,25 @@ int main(void)
 			mosfet_millis = millis();
 		}
 
+		// Enter set servo routine
+		if(getButtons(mini_rally) == BUTTONS_SET_SERVO)
+		{
+			if(millis() - set_servo_millis > 2000)
+			{
+				servo_setPosition(SERVO_ZERO);
+				esc_setPosition(ESC_ZERO);
 
-//		if(millis() - last_car_param_millis > CAR_PARAM_MILLIS)
-//
+				setServoSettingStatus(true);
+
+				set_servo_millis = millis();
+			}
+		}
+		else
+		{
+			set_servo_millis = millis();
+		}
+		//		if(millis() - last_car_param_millis > CAR_PARAM_MILLIS)
+		//
 		//		if(millis() - last_car_param_millis > CAR_PARAM_MILLIS)
 		//		{
 		//			last_car_param_millis = millis();

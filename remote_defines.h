@@ -22,6 +22,7 @@
 #define ASK_BIT				0x10
 
 #define BUTTONS_MOSFET_STATE	(/*L1_BUTTON | R1_BUTTON |*/ R2_BUTTON)
+#define BUTTONS_SET_SERVO		(L2_BUTTON | R2_BUTTON)
 
 typedef struct ROSpberryRemote
 {
@@ -39,5 +40,7 @@ typedef struct ROSpberryCar
 	int16_t y;
 
 }RC_Param;
+
+uint8_t getButtons(RC_remote remote) { return remote.buttons & 0x0F;}
 
 #endif /* REMOTE_DEFINES_H_ */

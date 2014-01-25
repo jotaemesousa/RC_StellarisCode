@@ -18,13 +18,25 @@
 #include <driverlib/pwm.h>
 #include "utils/uartstdio.h"
 #include "utils/ustdlib.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "flash_store_values.h"
 
-#define ESC_MAX				140
+#define ESC_MAX_N20			140
+#define ESC_MAX				125
 #define ESC_ZERO			90
-#define ESC_MIN				40
+#define ESC_MIN				55
+#define ESC_MIN_N20			40
+
 #define SERVO_MAX			120
+#define SERVO_MAX_PARTIAL	110
 #define SERVO_ZERO			90
+#define SERVO_MIN_PARTIAL	70
 #define SERVO_MIN			60
+
+void servoSetOffset(int16_t off);
+bool getServoSettingStatus(void);
+void setServoSettingStatus(bool status);
 
 void servo_init();
 void servo_setPosition(int position);
