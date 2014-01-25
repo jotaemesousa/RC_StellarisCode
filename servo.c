@@ -28,7 +28,7 @@ void servo_init()
 	PWMOutputState(PWM_BASE, PWM_OUT_2_BIT | PWM_OUT_3_BIT, true);
 	PWMGenEnable(PWM_BASE, PWM_GEN_1);
 
-	offset = getServoOffset() * 2;
+	offset = getServoOffset();
 }
 
 #define BASE 1560
