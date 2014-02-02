@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdbool.h>
 // debug
-#define DEBUG
+//#define DEBUG
 //#define DEBUG_CMD
 
 

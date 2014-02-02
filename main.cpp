@@ -34,7 +34,7 @@ extern "C" {
 #define MAX_PWM_DRIVE			10000
 
 // debug
-#define DEBUG
+//#define DEBUG
 //#define DEBUG_CMD
 // use sensors
 #define USE_I2C
